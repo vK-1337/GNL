@@ -6,40 +6,84 @@
 /*   By: vda-conc <vda-conc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 16:28:16 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/19 17:55:25 by vda-conc         ###   ########.fr       */
+/*   Updated: 2023/11/20 18:01:50 by vda-conc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+char *ft_fill_line(char **stash, ssize_t index)
+{
+    ssize_t i;
+    char *line;
+    
+    line = malloc((index + 1) * sizeof(char));
+    if (!line)
+        return (NULL);
+    i = 0;
+    while(i < index)
+    {
+        line[i] = (*stash)[i];
+        i++;
+    }
+    line[i] = '\0';
+    return (line);
+}
+
+void ft_clean_stash(char **stash, ssize_t index)
+{
+    ssize_t i;
+    ssize_t j;
+    char *cleaned_stash;
+    
+    i = ft_strlen((stash)[index]);
+    cleaned_stash = malloc((i + 1) * sizeof(char));
+    j = 0;
+    while(j < i)
+    {
+        cleaned_stash[j] = (*stash)[index];
+        index++;
+        j++;
+    }
+    cleaned_stash[j] = '\0';
+    free(*stash);
+    *stash = cleaned_stash;
+}
+
 char *get_next_line(int fd)
 {
     static char *stash;
-    ssize_t bytes_read;
     char *line;
+    ssize_t i;
+    ssize_t j;
+    char *buffer;
     
-    if (fd <= 0)
+    if (fd <= 0 || !fd)
         return (NULL);
-    stash = malloc((BUFFER_SIZE + 1) * sizeof(char));
-    // Parcourir stash jusqu'a l'emplacement ou l'on va plus tard ecrire.
-    // Si c'est rempli ca nous permettra de copier au bon endroit dans stash lors du transfert de stash a line
-    // Lire le fichier et evaluer le retour de la fonction read
-    // Stocker le contenu du buffer dans stash
-    // Evaluer le contenu de stash pour verifier qu'il n'y a pas de \n
-    // Si il n'y a rien continuer de remplir le stash bytes apres bytes
-    //      Si on voit qu'il n'y en a pas il faudra realloc de l'espace pour rajouter les choses dans stash
-    // Si on trouve un \n compter le nombre de caractere a transferer dans line AVEC LE \n
-    // Transferer dans line
-    // Nettoyer le contenu de stash avant le \n 
-    // Return line
+    buffer = ft_read_file(fd);
+    if (!buffer)
+        return (NULL);
+    i = ft_alloc_stash(&stash, BUFFER_SIZE); // debut bloc a transferer autre fonction si jamais trop long
+    ft_load_stash(&stash, buffer, i);
+    j = ft_check_stash(&stash);
+    printf("J est egal a : %zu\n", j);
+    printf("Stash contient : %s\n", stash);
+    while (!j)
+    {
+        i = ft_alloc_stash(&stash, BUFFER_SIZE);
+        ft_load_stash(&stash, buffer, i);
+        j = ft_check_stash(&stash);
+    }
+    line = ft_fill_line(&stash, j);
+    printf("Line contient : %s\n", line);
+    ft_clean_stash(&stash, j);
+    printf("Stash apres nettoyage : %s\n", stash);
     return (line);
 }
 
 int main()
 {
     int fd;
-    ssize_t bytes_read;
-    char *buffer;
     
     fd = open("./test.txt", O_RDONLY);
     if (fd == -1)
@@ -47,25 +91,7 @@ int main()
         printf("Erreur dans l'ouverture du fichier");
         return (1);
     }
-    buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
-    buffer[10] = '\0';
-    if (!buffer)
-    {
-        printf("Erreur pour allouer le buffer");
-        return (1);
-    }
-    bytes_read = read(fd, buffer, 15);
-    while (bytes_read)
-    {
-        printf("%zu", bytes_read);
-        printf("%s", buffer);
-        bytes_read = read(fd, buffer, 15);
-    }
-    if (bytes_read == -1)
-    {
-        printf("Erreur dans la lecture du fichier");
-        close(fd);
-        return (1);
-    }
+    printf("Retour de get_next_line : %s\n" , get_next_line(fd));
+    printf("Retour de get_next_line : %s\n" , get_next_line(fd));
     return (0);
 }

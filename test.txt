@@ -1,1 +1,5 @@
-Bonjour et bienvenue!\n Le retour a la ligne est ici et la\n fin du fichier.
+Bonj
+our
+et bienvenue!
+Le retour a la ligne est ici et la
+fin du fichier.
