@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vda-conc <vda-conc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vk <vk@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 16:28:16 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/19 17:55:25 by vda-conc         ###   ########.fr       */
+/*   Updated: 2023/11/19 21:38:56 by vk               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char *get_next_line(int fd)
     static char *stash;
     ssize_t bytes_read;
     char *line;
-    
+
     if (fd <= 0)
         return (NULL);
     stash = malloc((BUFFER_SIZE + 1) * sizeof(char));
@@ -30,8 +30,7 @@ char *get_next_line(int fd)
     //      Si on voit qu'il n'y en a pas il faudra realloc de l'espace pour rajouter les choses dans stash
     // Si on trouve un \n compter le nombre de caractere a transferer dans line AVEC LE \n
     // Transferer dans line
-    // Nettoyer le contenu de stash avant le \n 
-    // Return line
+    // Nettoyer le contenu de stash avant le \n
     return (line);
 }
 
@@ -40,7 +39,7 @@ int main()
     int fd;
     ssize_t bytes_read;
     char *buffer;
-    
+
     fd = open("./test.txt", O_RDONLY);
     if (fd == -1)
     {
