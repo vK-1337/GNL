@@ -6,11 +6,29 @@
 /*   By: vda-conc <vda-conc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/19 16:28:16 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/20 18:01:50 by vda-conc         ###   ########.fr       */
+/*   Updated: 2023/11/23 17:39:47 by vda-conc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+char *ft_copy_and_free(char *buffer, ssize_t bytes_read)
+{
+    char *copy;
+    ssize_t i;
+    
+    copy = malloc((bytes_read + 1) * sizeof(char));
+    if (!copy)
+        return (NULL);
+    i = 0;
+    while (i < bytes_read)
+    {
+        copy[i] = buffer[i];
+        i++;
+    }
+    free(buffer);
+    return (copy);
+}
 
 char *ft_fill_line(char **stash, ssize_t index)
 {
@@ -36,16 +54,19 @@ void ft_clean_stash(char **stash, ssize_t index)
     ssize_t j;
     char *cleaned_stash;
     
-    i = ft_strlen((stash)[index]);
-    cleaned_stash = malloc((i + 1) * sizeof(char));
+    i = 0;
+    while ((*stash)[i + index])
+        i++;
+    cleaned_stash = malloc((i) * sizeof(char));
+    if (!cleaned_stash)
+        return;
     j = 0;
     while(j < i)
     {
-        cleaned_stash[j] = (*stash)[index];
+        cleaned_stash[j] = (*stash)[index + 1];
         index++;
         j++;
     }
-    cleaned_stash[j] = '\0';
     free(*stash);
     *stash = cleaned_stash;
 }
@@ -58,26 +79,27 @@ char *get_next_line(int fd)
     ssize_t j;
     char *buffer;
     
-    if (fd <= 0 || !fd)
+    line = (NULL);
+    if (fd <= 0 || read(fd, line, 0) == -1 || BUFFER_SIZE <= 0)
         return (NULL);
     buffer = ft_read_file(fd);
     if (!buffer)
         return (NULL);
-    i = ft_alloc_stash(&stash, BUFFER_SIZE); // debut bloc a transferer autre fonction si jamais trop long
+    i = ft_alloc_stash(&stash, buffer);
     ft_load_stash(&stash, buffer, i);
-    j = ft_check_stash(&stash);
-    printf("J est egal a : %zu\n", j);
-    printf("Stash contient : %s\n", stash);
+    j = ft_check_stash(&stash, buffer);
     while (!j)
     {
-        i = ft_alloc_stash(&stash, BUFFER_SIZE);
+        buffer = ft_read_file(fd);
+        i = ft_alloc_stash(&stash, buffer);
         ft_load_stash(&stash, buffer, i);
-        j = ft_check_stash(&stash);
+        j = ft_check_stash(&stash, buffer);
     }
+    free(buffer);
+    if ( j == -1 )
+        j = 1;
     line = ft_fill_line(&stash, j);
-    printf("Line contient : %s\n", line);
     ft_clean_stash(&stash, j);
-    printf("Stash apres nettoyage : %s\n", stash);
     return (line);
 }
 
@@ -91,7 +113,14 @@ int main()
         printf("Erreur dans l'ouverture du fichier");
         return (1);
     }
-    printf("Retour de get_next_line : %s\n" , get_next_line(fd));
-    printf("Retour de get_next_line : %s\n" , get_next_line(fd));
+    printf("PASSAGE NUMERO 1 DE GNL :\n");
+    printf("Retour de get_next_line : %s FIN DE RETOUR\n" , get_next_line(fd));
+    printf("PASSAGE NUMERO 2 DE GNL :\n");
+    printf("Retour de get_next_line : %s FIN DE RETOUR\n" , get_next_line(fd));
+    printf("PASSAGE NUMERO 3 DE GNL :\n");
+    printf("Retour de get_next_line : %s FIN DE RETOUR\n" , get_next_line(fd));
+    printf("PASSAGE NUMERO 4 DE GNL :\n");
+    printf("Retour de get_next_line : %s FIN DE RETOUR\n" , get_next_line(fd));
+    close(fd);
     return (0);
 }
