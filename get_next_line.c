@@ -5,13 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vk <vk@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-<<<<<<< HEAD
-/*   Created: 2023/11/19 16:28:16 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/19 21:38:56 by vk               ###   ########.fr       */
-=======
 /*   Created: 2023/11/27 18:19:03 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/27 19:49:29 by vda-conc         ###   ########.fr       */
->>>>>>> c537f943bf6cb9c6b45ff03a28527a8f62440fdc
+/*   Updated: 2023/11/27 23:13:01 by vk               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,90 +28,123 @@ int ft_check_stash(char *str)
 int ft_read(char **stash, char *buffer, int fd)
 {
     int bytes_read;
-    int is_line;
+    int is_line_i;
 
     bytes_read = read(fd, buffer, BUFFER_SIZE);
     buffer[bytes_read] = '\0';
     if (!*stash)
         *stash = ft_strdup(buffer);
-    else 
+    else
         *stash = ft_strjoin(*stash, buffer);
     if (bytes_read == 0)
-        return (0);
+	{
+		free(buffer);
+		if (!*stash)
+			return (0);
+		else
+			return (ft_strlen(*stash));
+	}
     is_line_i = ft_check_stash(*stash);
     while (is_line_i == -1 && bytes_read > 0)
     {
         bytes_read = read(fd, buffer, BUFFER_SIZE);
-        *stash = ft_strjoin(*stash, buffer);
-        is_line_i = ft_check_stash(*stash);
+        if ( bytes_read > 0)
+        {
+          buffer[bytes_read] = '\0';
+          *stash = ft_strjoin(*stash, buffer);
+          is_line_i = ft_check_stash(*stash);
+        }
     }
-    return (is_line);
+    return (is_line_i);
 }
 
-ft_fill_line(char *line, char **stash)
+void ft_clean_stash(char **stash, ssize_t index)
 {
-    ssize_t
+	ssize_t i;
+	ssize_t limit;
+	char* new_stash;
+
+	limit = 0;
+	while ((*stash)[limit + index])
+		limit++;
+	new_stash = malloc((limit + 1) * sizeof(char));
+	if (!new_stash)
+		return;
+	i = 0;
+	while (i < limit)
+	{
+		new_stash[i] = (*stash)[i + index + 1];
+		i++;
+	}
+	free(*stash);
+	new_stash[i] = '\0';
+	*stash = new_stash;
+	return;
 }
 
-char *get_next_line(fd)
+char *ft_fill_line(char **stash, ssize_t index)
 {
-    char *line;
-<<<<<<< HEAD
+	ssize_t i;
+	char *line;
 
-    if (fd <= 0)
-        return (NULL);
-    stash = malloc((BUFFER_SIZE + 1) * sizeof(char));
-    // Parcourir stash jusqu'a l'emplacement ou l'on va plus tard ecrire.
-    // Si c'est rempli ca nous permettra de copier au bon endroit dans stash lors du transfert de stash a line
-    // Lire le fichier et evaluer le retour de la fonction read
-    // Stocker le contenu du buffer dans stash
-    // Evaluer le contenu de stash pour verifier qu'il n'y a pas de \n
-    // Si il n'y a rien continuer de remplir le stash bytes apres bytes
-    //      Si on voit qu'il n'y en a pas il faudra realloc de l'espace pour rajouter les choses dans stash
-    // Si on trouve un \n compter le nombre de caractere a transferer dans line AVEC LE \n
-    // Transferer dans line
-    // Nettoyer le contenu de stash avant le \n
-=======
+	line = malloc(((index + 1) + 1) * sizeof (char));
+	if (!line)
+		return (NULL);
+	i = 0;
+	while (i <= index)
+	{
+		line[i] = (*stash)[i];
+		i++;
+	}
+	line[i] = '\0';
+	return (line);
+}
+
+
+char *get_next_line(int fd)
+{
+	char *line;
     char *buffer;
     static char* stash;
-    
-    buffer = malloc((BUFFER_SIZE + 1) * sizeof (char));
-    if (!buffer)
-        return (NULL);
-    ft_read(&stash, buffer, fd);
-    ft_fill_line(line, *stash);
-    ft_clean_stash();
-    free(buffer);
->>>>>>> c537f943bf6cb9c6b45ff03a28527a8f62440fdc
-    return (line);
+    int line_index;
+
+	line = NULL;
+	if (fd <= 0 || read(fd, line, 0) == -1)
+		return (NULL);
+  buffer = malloc((BUFFER_SIZE + 1) * sizeof (char));
+  if (!buffer)
+      return (NULL);
+  line_index = ft_read(&stash, buffer, fd);
+	if (line_index == 0)
+		return (NULL);
+  if (line_index == -1)
+    line_index = (ft_strlen(stash));
+	line = ft_fill_line(&stash, line_index);
+  ft_clean_stash(&stash, line_index);
+  free(buffer);
+  return (line);
 }
 
-int main()
-{
-    int fd;
-<<<<<<< HEAD
-    ssize_t bytes_read;
-    char *buffer;
+// int main()
+// {
+//     int fd;
+//     char *line;
 
-=======
-    char *line;
-    
->>>>>>> c537f943bf6cb9c6b45ff03a28527a8f62440fdc
-    fd = open("./test.txt", O_RDONLY);
-    if (fd == -1)
-    {
-        printf("Erreur dans l'ouverture du fichier");
-        return (1);
-    }
-    printf("APPEL NUMERO 1\n");
-    line = get_next_line(fd);
-    printf("Retour numero 1: |%s|\n\n", line);
-    printf("APPEL NUMERO 2\n");
-    line = get_next_line(fd);
-    printf("Retour numero 2: |%s|\n\n", line);
-    printf("APPEL NUMERO 3\n");
-    line = get_next_line(fd);
-    printf("Retour numero 3: |%s|\n\n", line);
-    free(line);
-    return (0);
-}
+//     fd = open("./test.txt", O_RDONLY);
+//     if (fd == -1)
+//     {
+//         printf("Erreur dans l'ouverture du fichier");
+//         return (1);
+//     }
+//     printf("APPEL NUMERO 1\n");
+//     line = get_next_line(fd);
+//     printf("Retour numero 1: |%s|\n\n", line);
+//     printf("APPEL NUMERO 2\n");
+//     line = get_next_line(fd);
+//     printf("Retour numero 2: |%s|\n\n", line);
+//     printf("APPEL NUMERO 3\n");
+//     line = get_next_line(fd);
+//     printf("Retour numero 3: |%s|\n\n", line);
+//     free(line);
+//     return (0);
+// }
