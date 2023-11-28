@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vk <vk@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: vda-conc <vda-conc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 16:38:56 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/27 21:20:52 by vk               ###   ########.fr       */
+/*   Updated: 2023/11/28 15:59:11 by vda-conc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@ char	*ft_strdup(char *s)
 	char	*str;
 	int		i;
 
-    if (!s)
-    {
-        return (NULL);
-    }
+	if (!s)
+	{
+		return (NULL);
+	}
 	str = malloc((ft_strlen(s) + 1) * sizeof(char));
 	if (!str)
 		return (NULL);
