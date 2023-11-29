@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vda-conc <vda-conc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/27 18:19:03 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/28 16:15:46 by vda-conc         ###   ########.fr       */
+/*   Updated: 2023/11/29 14:17:44 by vda-conc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 int	ft_check_stash(char *str)
 {
@@ -100,7 +100,7 @@ char	*get_next_line(int fd)
 {
 	char		*line;
 	char		*buffer;
-	static char	*stash;
+	static char	*stash[MAX_FD];
 	int			line_index;
 
 	line = NULL;
@@ -109,14 +109,14 @@ char	*get_next_line(int fd)
 	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buffer)
 		return (NULL);
-	line_index = ft_read(&stash, buffer, fd);
-	if (line_index == -1 && ft_strlen(stash) == 0)
+	line_index = ft_read(&stash[fd], buffer, fd);
+	if (line_index == -1 && ft_strlen(stash[fd]) == 0)
 		return (NULL);
-	else if (line_index == -1 && (ft_strlen(stash) > 0))
+	else if (line_index == -1 && (ft_strlen(stash[fd]) > 0))
 	{
-		line_index = ft_strlen(stash) - 1;
+		line_index = ft_strlen(stash[fd]) - 1;
 	}
-	line = ft_fill_line(&stash, line_index);
-	ft_clean_stash(&stash, line_index);
+	line = ft_fill_line(&stash[fd], line_index);
+	ft_clean_stash(&stash[fd], line_index);
 	return (line);
 }

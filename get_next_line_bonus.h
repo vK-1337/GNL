@@ -1,20 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vda-conc <vda-conc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/19 16:28:18 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/28 17:56:57 by vda-conc         ###   ########.fr       */
+/*   Created: 2023/11/28 16:41:44 by vda-conc          #+#    #+#             */
+/*   Updated: 2023/11/29 11:34:43 by vda-conc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
+# endif
+
+# ifndef MAX_FD
+#  define MAX_FD 100000
 # endif
 
 # include <fcntl.h>
