@@ -6,7 +6,7 @@
 /*   By: vda-conc <vda-conc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/27 18:19:03 by vda-conc          #+#    #+#             */
-/*   Updated: 2023/11/28 16:15:46 by vda-conc         ###   ########.fr       */
+/*   Updated: 2023/12/04 17:23:16 by vda-conc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ char	*get_next_line(int fd)
 	int			line_index;
 
 	line = NULL;
+	buffer = NULL;
 	if (fd < 0 || read(fd, line, 0) == -1)
 		return (NULL);
 	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
@@ -111,11 +112,13 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line_index = ft_read(&stash, buffer, fd);
 	if (line_index == -1 && ft_strlen(stash) == 0)
-		return (NULL);
-	else if (line_index == -1 && (ft_strlen(stash) > 0))
 	{
-		line_index = ft_strlen(stash) - 1;
+		free(stash);
+		stash = NULL;
+		return (NULL);
 	}
+	else if (line_index == -1 && (ft_strlen(stash) > 0))
+		line_index = ft_strlen(stash) - 1;
 	line = ft_fill_line(&stash, line_index);
 	ft_clean_stash(&stash, line_index);
 	return (line);
